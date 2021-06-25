@@ -182,7 +182,7 @@ app.post("/interactions", (req, res) => {
             break;
           default:
             sendMessage(
-              "😬 An invalid option was provided. Please contact TechGeekGamer#7205 if the issue persists."
+              "😬 An invalid option was provided. Please open an issue on [GitHub](https://github.com/Team-Neptune/Korral-Interactions) if the issue persists."
             );
             break;
         }
@@ -301,7 +301,7 @@ app.post("/interactions", (req, res) => {
         break;
       default:
         sendMessage(
-          `Uh oh, that interaction wasn't found! 😬\nContact TechGeekGamer#7205 if the issue persists.`
+          `Uh oh, that interaction wasn't found! 😬\nOpen an issue on [GitHub](https://github.com/Team-Neptune/Korral-Interactions) if the issue persists.`
         );
         break;
     }
