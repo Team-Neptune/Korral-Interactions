@@ -58,7 +58,7 @@ app.post("/interactions", (req, res) => {
       };
       if (components) payload.components = components;
       if (allowed_mentions) payload.allowed_mentions = allowed_mentions;
-      if (acked == false)
+      if (acked == false){
         payload = {
           type: 4,
           data: {
@@ -68,6 +68,12 @@ app.post("/interactions", (req, res) => {
             },
           },
         };
+        if(allowed_mentions)
+          payload.data.allowed_mentions = allowed_mentions;
+      }else{
+        if(allowed_mentions)
+          payload.allowed_mentions = allowed_mentions;
+      }
       return new Promise((resolve, reject) => {
         fetch(
           acked === true
