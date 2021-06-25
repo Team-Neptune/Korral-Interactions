@@ -1,7 +1,7 @@
 {
   "name": "korral-interactions",
   "version": "1.0.0",
-  "description": "Interactions webserver for Team Neptune Discord server.",
+  "description": "The Express webserver for the interactions of Korral in the Team Neptune Discord server.",
   "main": "out/src/index.js",
   "types": "typings/",
   "dependencies": {
