@@ -90,7 +90,8 @@ interface InteractionButton {
 
 export interface Config {
     public_key:string,
-    port?:number
+    port?:number,
+    bot_token:string
 }
 
 export interface GitHubRelease {

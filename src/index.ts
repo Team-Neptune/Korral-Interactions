@@ -138,7 +138,7 @@ app.post("/interactions", (req, res) => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            authorization: `Bot ${process.env.komet_token}`,
+            authorization: `Bot ${config.bot_token}`,
           },
         })
           .then((r) => r.json())
