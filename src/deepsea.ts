@@ -32,6 +32,7 @@ var readFromDb = () => {
 var updateDatabase = async () => {
     console.log("Downloading new APIs")
     db.releaseApi = await getJsonFromUrl(deepseaApi);
+    db.lastFetchDate = Date.now()
     writeToDb(db);
 }
 
