@@ -16,7 +16,8 @@ import {
 import DeepSea from "./deepsea";
 const discord_api = "https://discord.com/api/v9";
 const app = express();
-const port = config.port || 3000;
+const port = process.env.PORT || config.port || 3000;
+const public_key = process.env.public_key || config.public_key
 
 app.use("/interactions", verifyKeyMiddleware(config.public_key));
 
@@ -65,11 +66,11 @@ app.post("/interactions", (req, res) => {
             content: content,
             allowed_mentions: {
               parse: [],
-            },
+            }
           },
         };
-        if(allowed_mentions)
-          payload.data.allowed_mentions = allowed_mentions;
+        if(allowed_mentions) payload.data.allowed_mentions = allowed_mentions;
+        if (components) payload.data.components = components;
       }else{
         if(allowed_mentions)
           payload.allowed_mentions = allowed_mentions;
@@ -144,7 +145,7 @@ app.post("/interactions", (req, res) => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            authorization: `Bot ${config.bot_token}`,
+            authorization: `Bot ${process.env.bot_token || config.bot_token}`,
           },
         })
           .then((r) => r.json())
@@ -257,7 +258,7 @@ app.post("/interactions", (req, res) => {
         }
         sendMessage(avatarURL);
         break;
-      case "rule":
+      case "rule":{
         const ruleNum = interaction.data.options[0].value;
         const target = interaction.data.options[1]
           ? interaction.data.options[1].value
@@ -273,6 +274,7 @@ app.post("/interactions", (req, res) => {
           target ? { users: [target] } : undefined
         );
         break;
+      }
       case "nogc":
         ack().then(() => {
           getMessage("703302552594284594", "809485735060307990").then((m) => {
@@ -299,6 +301,38 @@ app.post("/interactions", (req, res) => {
         const msg = messages[index];
         sendMessage(msg);
         break;
+      case "cpr":{
+        let target = interaction.data.options && interaction.data.options[0]?interaction.data.options[0].value:undefined;
+        sendMessage(
+          `${target ? `*Target: <@${target}>*\n` : ``}\nTeam Neptune has developed a payload (CommonProblemResolver) that can fix a few of the common issues you can encounter with your switch.`,
+          target ? { users: [target] } : undefined, [
+            {
+              "type":1,
+              "components":[
+                {
+                  "type":2,
+                  "style":5,
+                  "url":"https://gbatemp.net/threads/payload-cpr-fix-your-switch-without-a-pc.590341/",
+                  "label":"Learn more"
+                },
+                {
+                  "type":2,
+                  "style":5,
+                  "url":"https://github.com/Team-Neptune/CommonProblemResolver",
+                  "label":"Source Code"
+                },
+                {
+                  "type":2,
+                  "style":5,
+                  "url":"https://github.com/Team-Neptune/CommonProblemResolver/releases/latest",
+                  "label":"Latest Release"
+                }
+              ]
+            }
+          ]
+        )
+        break;
+      }
       default:
         sendMessage(
           `Uh oh, that interaction wasn't found! 😬\nOpen an issue on [GitHub](https://github.com/Team-Neptune/Korral-Interactions) if the issue persists.`
