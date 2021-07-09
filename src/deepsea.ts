@@ -1,4 +1,4 @@
-import * as fetch from 'node-fetch'
+import fetch from 'node-fetch'
 import {closeSync, openSync, writeFileSync, readFileSync, existsSync, mkdirSync} from 'fs'
 import {DeepseaDb} from '../typings'
 const dbFile = "./storage/deepsea_db.json";
