@@ -114,4 +114,22 @@ export interface DeepseaDb {
     releaseApi:GitHubRelease[]
 }
 
-type BuilderSection = "CFW & Bootloaders" | "Homebrew Apps" | "Sysmodules" | "Overlays" | "Payloads" | "Addons"
+interface BuilderApiModule {
+    repo:string,
+    displayName:string,
+    category:BuilderCategory,
+    description:string,
+    required:boolean,
+    requires:string[]
+}
+
+interface BuilderApiModules {
+    [moduleName:string]:BuilderApiModule
+}
+
+interface BuilderApiJson {
+    lastUpdated:number,
+    modules:BuilderApiModules
+}
+
+type BuilderCategory = "CFW & Bootloaders" | "Homebrew Apps" | "Sysmodules" | "Overlays" | "Payloads" | "Addons"
