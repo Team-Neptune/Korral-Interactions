@@ -9,9 +9,10 @@ interface InteractionData {
     id:string,
     name:string,
     resolved?:any,
-    options?:Array<ApplicationCommandInteractionDataOption>,
+    options?:ApplicationCommandInteractionDataOption[],
     custom_id?:string,
-    component_type:1 | 2
+    component_type:1 | 2 | 3,
+    values:string[]
 }
 
 interface User {
@@ -34,7 +35,7 @@ interface User {
 interface InteractionMember {
     user?:User,
     nick?:string,
-    roles:Array<string>,
+    roles:string[],
     joined_at:string,
     premium_since?:string,
     deaf:boolean,
@@ -56,18 +57,22 @@ export interface Interaction {
     user?:User,
     token:string,
     version:number,
-    message?:""
+    message?:any,
+    update(msg:InteractionResponse):Promise<Response>,
+    reply(msg:InteractionResponse):Promise<Response>,
+    ack(msg:InteractionResponse):Promise<Response>
 }
 
 export interface InteractionResponse {
     type?:number,
     data?:InteractionResponse,
     content?: string,
-    components?: Array<InteractionButton>,
+    components?: MessageComponent[],
     allowed_mentions?: {
-      parse: Array<string>
+      parse: string[]
     },
-    embeds?:Array<any>
+    embeds?:any[],
+    flags?:number
 }
 
 interface ButtonConfig {
@@ -77,15 +82,18 @@ interface ButtonConfig {
     alreadyVotedMessage:string
 }
 
-interface InteractionButton {
-    type:1 | 2,
+interface MessageComponent {
+    type:1 | 2 | 3,
     style?: 1 | 2 | 3 | 4 |5,
     label?:string,
     emoji?:{},
     custom_id?:string,
     url?:string,
     disabled?:boolean,
-    components?:Array<InteractionButton>
+    components?:MessageComponent[],
+    placeholder?:string,
+    options?:MessageComponent[],
+    value?:string
 }
 
 export interface Config {
@@ -103,5 +111,7 @@ export interface GitHubRelease {
 
 export interface DeepseaDb {
     lastFetchDate:number,
-    releaseApi:Array<GitHubRelease>
+    releaseApi:GitHubRelease[]
 }
+
+type BuilderSection = "CFW & Bootloaders" | "Homebrew Apps" | "Sysmodules" | "Overlays" | "Payloads" | "Addons"
