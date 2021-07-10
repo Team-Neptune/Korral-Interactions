@@ -545,7 +545,7 @@ app.post("/interactions", (req, res) => {
   if(interaction.type == InteractionType.MESSAGE_COMPONENT && interaction.data && interaction.data.component_type == 2 && interaction.data.custom_id == "build"){
     let buildUrl = builderStore.generateBuildURL(interaction.member?interaction.member.user.id:interaction.user.id)
     return interaction.update({
-      "content":`Custom DeepSea package created! This command was created by TechGeekGamer#7205.\n\nIf you ran into any issues with this command, open an issue on the [GitHub Repo](https://github.com/Team-Neptune/Korral-Interactions)`,
+      "content":`Custom DeepSea package created! This command was created by TechGeekGamer#7205.\n\nIf you ran into any issues with this command, open an issue on the [GitHub Repo](<https://github.com/Team-Neptune/Korral-Interactions>)`,
       "components":[
         {
           "type":1,
