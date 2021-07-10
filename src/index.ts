@@ -9,6 +9,7 @@ import {
   MessageComponent,
   InteractionResponse,
   BuilderApiJson,
+  BuilderApiModule,
 } from "../typings"
 import express from "express"
 import {
@@ -28,7 +29,15 @@ let builder = new Builder()
 let builderStore = new BuilderStore()
 
 builder.on('new', (userID) => {
-  builderStore.start(userID)
+  let builderData:BuilderApiJson = /* Temp */ JSON.parse(readFileSync("./buildermeta.json").toString())
+  let starterMoodules = Object.keys(builderData.modules).filter(moduleName => {
+    return builderData.modules[moduleName].required == true
+  }).map(moduleName => {
+    let module:BuilderApiModule = builderData.modules[moduleName]
+    module.key = moduleName
+    return module;
+  })
+  builderStore.start(userID, starterMoodules)
 })
 
 builder.on('clear', (userID) => {
@@ -430,8 +439,11 @@ app.post("/interactions", (req, res) => {
           "Payloads",
           "Addons"
         ]
-        builder.emit("new", interaction.member?interaction.member.user.id:interaction.user.id)
-        sendMessage(`**DeepSea Custom Package Builder**\nSelect a category below to view a list of packages you can add to your custom deepsea package.`, undefined, [
+        let sessionExists = builderStore.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id)
+        if(!sessionExists)
+          builder.emit("new", interaction.member?interaction.member.user.id:interaction.user.id)
+        builderStore.menuInteraction(interaction.member?interaction.member.user.id:interaction.user.id)
+        sendMessage(`**DeepSea Custom Package Builder**\n${sessionExists?`*Your previous session has been loaded.*\n`:'*This session will expire after 15 minutes of no interaction.*\n'}Select a category below to view a list of packages you can add to your custom deepsea package.`, undefined, [
           {
             "type":1,
             "components":[
@@ -506,6 +518,13 @@ app.post("/interactions", (req, res) => {
                 "custom_id":`build`,
                 "style":1,
                 "label":`Build package`
+              },
+              {
+                "type":2,
+                "custom_id":`clear`,
+                "style":4,
+                "label":`Clear session`,
+                "disabled":!sessionExists
               }
             ]
           }
@@ -522,8 +541,43 @@ app.post("/interactions", (req, res) => {
 
   //Buttons
 
+  //Build package
+  if(interaction.type == InteractionType.MESSAGE_COMPONENT && interaction.data && interaction.data.component_type == 2 && interaction.data.custom_id == "build"){
+    let buildUrl = builderStore.generateBuildURL(interaction.member?interaction.member.user.id:interaction.user.id)
+    return interaction.update({
+      "content":`Custom DeepSea package created! This command was created by TechGeekGamer#7205.\n\nIf you ran into any issues with this command, open an issue on the [GitHub Repo](https://github.com/Team-Neptune/Korral-Interactions)`,
+      "components":[
+        {
+          "type":1,
+          "components":[
+            {
+              "type":2,
+              "style":5,
+              "url":buildUrl,
+              "label":"Download Package"
+            }
+          ]
+        }
+      ]
+    })
+  }
+
+  //Clear session
+  if(interaction.type == InteractionType.MESSAGE_COMPONENT && interaction.data && interaction.data.component_type == 2 && interaction.data.custom_id == "clear"){
+    builder.emit('clear', interaction.member?interaction.member.user.id:interaction.user.id)
+    return interaction.update({
+      "content":`Session has been cleared. Run the /builder command to start a new session.`,
+      "components":[]
+    })
+  }
+
   //Add item
   if(interaction.type == InteractionType.MESSAGE_COMPONENT && interaction.data && interaction.data.component_type == 2 && interaction.data.custom_id.startsWith("add_")){
+    if(!builderStore.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id))
+      return interaction.update({
+        "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session.`,
+        "components":[]
+      })
     let builderData:BuilderApiJson = /* Temp */ JSON.parse(readFileSync("./buildermeta.json").toString())
     let selectedModuleName = interaction.data.custom_id.split("add_")[1]
     let options = Object.keys(builderData.modules).filter(mn => {
@@ -531,6 +585,7 @@ app.post("/interactions", (req, res) => {
     }).map(v => {
       return v
     })
+    builderData.modules[selectedModuleName].key = selectedModuleName;
     builder.emit("add", interaction.member?interaction.member.user.id:interaction.user.id, builderData.modules[selectedModuleName])
     interaction.update({
       "components":[
@@ -594,6 +649,11 @@ app.post("/interactions", (req, res) => {
 
   //Remove item
   if(interaction.type == InteractionType.MESSAGE_COMPONENT && interaction.data && interaction.data.component_type == 2 && interaction.data.custom_id.startsWith("remove_")){
+    if(!builderStore.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id))
+      return interaction.update({
+        "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session.`,
+        "components":[]
+      })
     let builderData:BuilderApiJson = /* Temp */ JSON.parse(readFileSync("./buildermeta.json").toString())
     let selectedModuleName = interaction.data.custom_id.split("remove_")[1]
     let options = Object.keys(builderData.modules).filter(mn => {
@@ -601,6 +661,7 @@ app.post("/interactions", (req, res) => {
     }).map(v => {
       return v
     })
+    builderData.modules[selectedModuleName].key = selectedModuleName;
     builder.emit("remove", interaction.member?interaction.member.user.id:interaction.user.id, builderData.modules[selectedModuleName])
     interaction.update({
       "components":[
@@ -664,6 +725,11 @@ app.post("/interactions", (req, res) => {
 
   //Category
   if(interaction.type == InteractionType.MESSAGE_COMPONENT && interaction.data && interaction.data.component_type == 2 && interaction.data.custom_id == "viewcats"){
+    if(!builderStore.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id))
+      return interaction.update({
+        "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session.`,
+        "components":[]
+      })
     const buildCategories = [
       "CFW & Bootloaders",
       "Homebrew Apps",
@@ -672,6 +738,7 @@ app.post("/interactions", (req, res) => {
       "Payloads",
       "Addons"
     ]
+    builderStore.menuInteraction(interaction.member?interaction.member.user.id:interaction.user.id)
     interaction.update({
       "content":`**DeepSea Custom Package Builder**\nSelect a category below to view a list of packages you can add to your custom deepsea package.`,
       "components":[
@@ -758,6 +825,11 @@ app.post("/interactions", (req, res) => {
 
   //Selects
   if(interaction.type == InteractionType.MESSAGE_COMPONENT && interaction.data && interaction.data.component_type == 3){
+    if(!builderStore.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id))
+      return interaction.update({
+        "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session.`,
+        "components":[]
+      })
     let builderData:BuilderApiJson = /* Temp */ JSON.parse(readFileSync("./buildermeta.json").toString())
     if(interaction.data.values[0].startsWith("viewcat_")){
       let categories = []
@@ -770,6 +842,7 @@ app.post("/interactions", (req, res) => {
       }).map(v => {
         return v
       })
+      builderStore.menuInteraction(interaction.member?interaction.member.user.id:interaction.user.id)
       interaction.update({
         "content":`**${interaction.data.values[0].split("viewcat_")[1]}**`,
         "components":[
@@ -815,15 +888,21 @@ app.post("/interactions", (req, res) => {
     }
 
     if(interaction.data.values[0].startsWith("viewmore_")){
+      if(!builderStore.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id))
+        return interaction.update({
+          "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session.`,
+          "components":[]
+        })
       let builderData:BuilderApiJson = /* Temp */ JSON.parse(readFileSync("./buildermeta.json").toString())
       let selectedModuleName = interaction.data.values[0].split("viewmore_")[1]
       console.log(builderStore.getCurrent(interaction.member?interaction.member.user.id:interaction.user.id))
-      let moduleAlreadyAdded = builderData.modules[selectedModuleName].required || builderStore.getCurrent(interaction.member?interaction.member.user.id:interaction.user.id).find(m => m.repo == builderData.modules[selectedModuleName].repo)
+      let moduleAlreadyAdded = builderStore.getCurrent(interaction.member?interaction.member.user.id:interaction.user.id).find(m => m.key == selectedModuleName)
       let options = Object.keys(builderData.modules).filter(mn => {
         return builderData.modules[mn].category == builderData.modules[selectedModuleName].category
       }).map(v => {
         return v
       })
+      builderStore.menuInteraction(interaction.member?interaction.member.user.id:interaction.user.id)
       interaction.update({
         "content":`**${builderData.modules[selectedModuleName].category}** | ${builderData.modules[selectedModuleName].displayName}\nBy: ${builderData.modules[selectedModuleName].repo.split("/")[0]}\n\n${builderData.modules[selectedModuleName].description}\n\n${builderData.modules[selectedModuleName].required?`*${builderData.modules[selectedModuleName].displayName} is required and cannot be removed.*`:``}`,
         "components":[
@@ -832,7 +911,7 @@ app.post("/interactions", (req, res) => {
             "components":[
               {
                 "type":2,
-                "custom_id":`add_${selectedModuleName}`,
+                "custom_id":`${moduleAlreadyAdded?`remove`:`add`}_${selectedModuleName}`,
                 "style":moduleAlreadyAdded?4:3,
                 "label":`${moduleAlreadyAdded?`Remove`:`Add`} ${builderData.modules[selectedModuleName].displayName}`,
                 "disabled":builderData.modules[selectedModuleName].required
