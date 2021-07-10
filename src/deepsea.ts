@@ -30,7 +30,7 @@ var readFromDb = () => {
 }
 
 var updateDatabase = async () => {
-    console.log("Downloading new APIs")
+    console.log("Updating DeepSea DB data")
     db.releaseApi = await getJsonFromUrl(deepseaApi);
     db.lastFetchDate = Date.now()
     writeToDb(db);
@@ -43,15 +43,10 @@ var setup = async () => {
         }
 
         if (existsSync(dbFile)) {
-            console.log("EXISTS")
             db = readFromDb();
-            console.log(db.lastFetchDate)
-            console.log(Date.now())
             var differenceInHours = Math.abs(Date.now() - db.lastFetchDate) / 36e5;
             if (differenceInHours > 1) updateDatabase();
-            if (differenceInHours > 1) console.log("OUTDATED");
         } else {
-            console.log("NOT EXISTS")
             createFile(dbFile);
             updateDatabase()
         }
