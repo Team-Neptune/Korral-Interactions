@@ -1,4 +1,5 @@
-import { BuilderApiModule, BuilderCategory } from "../typings";
+import {readFileSync} from 'fs'
+import { BuilderApiJson, BuilderApiModule, BuilderCategory } from "../typings";
 
 interface UserBuildStore {
     timer:any,
@@ -49,8 +50,20 @@ class BuilderStore {
         return this.store[userID]?true:false
     }
     generateBuildURL(userID:string){
+        //Add module required modules
+        this.store[userID].modules.forEach(m => {
+            m.requires.forEach(mn => {
+                if(!this.store[userID].modules.find(module => module.key == mn)){
+                    let builderData:BuilderApiJson = /* Temp */ JSON.parse(readFileSync("./buildermeta.json").toString())
+                    builderData.modules[mn].key = mn
+                    this.store[userID].modules.push(builderData.modules[mn])
+                }
+            })
+        })
+        console.log(this.store[userID].modules)
         let url = "https://builder.teamneptune.net/build/";
         url = url + this.store[userID].modules.map(m => m.key).join(";");
+        this.cancel(userID)
         return url;
     }
     /** Delete the current user's builder store */
