@@ -575,7 +575,7 @@ app.post("/interactions", (req, res) => {
   if(interaction.type == InteractionType.MESSAGE_COMPONENT && interaction.data && interaction.data.component_type == 2 && interaction.data.custom_id.startsWith("add_")){
     if(!builderStore.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id))
       return interaction.update({
-        "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session.`,
+        "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session. If this is occurring multiple times, and it hasn't been 15 minutes, open an issue on the [GitHub Repo](<https://github.com/Team-Neptune/Korral-Interactions>). If this is occurring even if it hasn't been 15 minutes, open an issue on the [GitHub Repo](<https://github.com/Team-Neptune/Korral-Interactions>).`,
         "components":[]
       })
     let builderData:BuilderApiJson = /* Temp */ JSON.parse(readFileSync("./buildermeta.json").toString())
@@ -651,7 +651,7 @@ app.post("/interactions", (req, res) => {
   if(interaction.type == InteractionType.MESSAGE_COMPONENT && interaction.data && interaction.data.component_type == 2 && interaction.data.custom_id.startsWith("remove_")){
     if(!builderStore.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id))
       return interaction.update({
-        "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session.`,
+        "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session. If this is occurring multiple times, and it hasn't been 15 minutes, open an issue on the [GitHub Repo](<https://github.com/Team-Neptune/Korral-Interactions>).`,
         "components":[]
       })
     let builderData:BuilderApiJson = /* Temp */ JSON.parse(readFileSync("./buildermeta.json").toString())
@@ -727,7 +727,7 @@ app.post("/interactions", (req, res) => {
   if(interaction.type == InteractionType.MESSAGE_COMPONENT && interaction.data && interaction.data.component_type == 2 && interaction.data.custom_id == "viewcats"){
     if(!builderStore.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id))
       return interaction.update({
-        "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session.`,
+        "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session. If this is occurring multiple times, and it hasn't been 15 minutes, open an issue on the [GitHub Repo](<https://github.com/Team-Neptune/Korral-Interactions>).`,
         "components":[]
       })
     const buildCategories = [
@@ -827,7 +827,7 @@ app.post("/interactions", (req, res) => {
   if(interaction.type == InteractionType.MESSAGE_COMPONENT && interaction.data && interaction.data.component_type == 3){
     if(!builderStore.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id))
       return interaction.update({
-        "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session.`,
+        "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session. If this is occurring multiple times, and it hasn't been 15 minutes, open an issue on the [GitHub Repo](<https://github.com/Team-Neptune/Korral-Interactions>).`,
         "components":[]
       })
     let builderData:BuilderApiJson = /* Temp */ JSON.parse(readFileSync("./buildermeta.json").toString())
@@ -890,7 +890,7 @@ app.post("/interactions", (req, res) => {
     if(interaction.data.values[0].startsWith("viewmore_")){
       if(!builderStore.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id))
         return interaction.update({
-          "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session.`,
+          "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session. If this is occurring multiple times, and it hasn't been 15 minutes, open an issue on the [GitHub Repo](<https://github.com/Team-Neptune/Korral-Interactions>).`,
           "components":[]
         })
       let builderData:BuilderApiJson = /* Temp */ JSON.parse(readFileSync("./buildermeta.json").toString())
@@ -904,7 +904,7 @@ app.post("/interactions", (req, res) => {
       })
       builderStore.menuInteraction(interaction.member?interaction.member.user.id:interaction.user.id)
       interaction.update({
-        "content":`**${builderData.modules[selectedModuleName].category}** | ${builderData.modules[selectedModuleName].displayName}\nBy: ${builderData.modules[selectedModuleName].repo.split("/")[0]}\n\n${builderData.modules[selectedModuleName].description}\n\n${builderData.modules[selectedModuleName].required?`*${builderData.modules[selectedModuleName].displayName} is required and cannot be removed.*`:``}`,
+        "content":`**${builderData.modules[selectedModuleName].category}** | ${builderData.modules[selectedModuleName].displayName}\nBy: ${builderData.modules[selectedModuleName].repo.split("/")[0]}\n\n${builderData.modules[selectedModuleName].description}${builderData.modules[selectedModuleName].requires.length > 0?`\n\n**Module requirements**\nEven if not selected, the following modules are required and will be added:\n- ${builderData.modules[selectedModuleName].requires.map(moduleName => builderData.modules[moduleName].displayName).join("\n- ")}`:``}\n\n${builderData.modules[selectedModuleName].required?`*${builderData.modules[selectedModuleName].displayName} is required and cannot be removed.*`:``}`,
         "components":[
           {
             "type":1,
