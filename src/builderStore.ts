@@ -15,9 +15,9 @@ class BuilderStore {
         this.store = {};
     };
     /** Create a store */
-    start(userID:string){
+    start(userID:string, starterModules:BuilderApiModule[]){
         this.store[userID] = {
-            "modules":[],
+            "modules":starterModules || [],
             "timer":setTimeout(() => {
                 this.store[userID] = undefined;
             }, 900000)
@@ -41,6 +41,17 @@ class BuilderStore {
     }
     getCurrent(userID:string){
         return this.store[userID].modules
+    }
+    menuInteraction(userID:string){
+        this.resetTimer(userID)
+    }
+    sessionExists(userID:string){
+        return this.store[userID]?true:false
+    }
+    generateBuildURL(userID:string){
+        let url = "https://builder.teamneptune.net/build/";
+        url = url + this.store[userID].modules.map(m => m.key).join(";");
+        return url;
     }
     /** Delete the current user's builder store */
     cancel(userID:string){
