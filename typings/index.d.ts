@@ -120,7 +120,9 @@ interface BuilderApiModule {
     category:BuilderCategory,
     description:string,
     required:boolean,
-    requires:string[]
+    requires:string[],
+    /** Internal string used within bot */
+    key?:string
 }
 
 interface BuilderApiModules {
