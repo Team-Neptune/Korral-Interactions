@@ -26,7 +26,6 @@ class BuilderStore {
     }
     /** Reset the 15 minute timeout for data storing */
     resetTimer(userID:string){
-        console.log(this.store)
         clearTimeout(this.store[userID].timer)
         this.store[userID].timer = setTimeout(() => {
             this.store[userID] = undefined;
@@ -60,7 +59,6 @@ class BuilderStore {
                 }
             })
         })
-        console.log(this.store[userID].modules)
         let url = "https://builder.teamneptune.net/build/";
         url = url + this.store[userID].modules.map(m => m.key).join(";");
         this.cancel(userID)
