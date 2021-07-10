@@ -20,6 +20,7 @@ import {
 import DeepSea from "./deepsea"
 import BuilderStore from "./builderStore"
 const discord_api = "https://discord.com/api/v9"
+const builder_api = "https://builder.teamneptune.net/meta.json"
 const app = express()
 const port = process.env.PORT || config.port || 3000
 const public_key = process.env.public_key || config.public_key
@@ -27,6 +28,25 @@ const public_key = process.env.public_key || config.public_key
 //Builder
 let builder = new Builder()
 let builderStore = new BuilderStore()
+
+//Get latest builder API data
+async function checkForLatestBuildApi() {
+  let current = existsSync("./buildermeta.json")?(JSON.parse(readFileSync("./buildermeta.json").toString()) as BuilderApiJson):undefined
+  if(current  && (current.lastUpdated * 1000) > Date.now()){
+    console.log(`Cached builder data new enough, valid until ${new Date(current.lastUpdated * 1000).toString()}`)
+    return true
+  }
+  console.log(`Fetching latest builder data from '${builder_api}'...`)
+  const response = await fetch(builder_api, {
+      "method":"GET"
+  })
+  let data = (await response.json() as BuilderApiJson)
+  data.lastUpdated = data.lastUpdated + 3900
+  writeFileSync("./buildermeta.json", JSON.stringify(data))
+  console.log("Latest builder data fetched!")
+  return true
+}
+checkForLatestBuildApi()
 
 builder.on('new', (userID) => {
   let builderData:BuilderApiJson = /* Temp */ JSON.parse(readFileSync("./buildermeta.json").toString())
@@ -443,93 +463,95 @@ app.post("/interactions", (req, res) => {
         if(!sessionExists)
           builder.emit("new", interaction.member?interaction.member.user.id:interaction.user.id)
         builderStore.menuInteraction(interaction.member?interaction.member.user.id:interaction.user.id)
-        sendMessage(`**DeepSea Custom Package Builder**\n${sessionExists?`*Your previous session has been loaded.*\n`:'*This session will expire after 15 minutes of no interaction.*\n'}Select a category below to view a list of packages you can add to your custom deepsea package.`, undefined, [
-          {
-            "type":1,
-            "components":[
-              {
-                "type":3,
-                "custom_id":"select",
-                "options":[
-                  {
-                    "label":buildCategories[0],
-                    "style":1,
-                    "value":`viewcat_${buildCategories[0]}`,
-                    "type":2,
-                    "emoji":{
-                      "name":"💿"
+        checkForLatestBuildApi().then(() => {
+          sendMessage(`**DeepSea Custom Package Builder**\n${sessionExists?`*Your previous session has been loaded.*\n`:'*This session will expire after 15 minutes of no interaction.*\n'}Select a category below to view a list of packages you can add to your custom deepsea package.`, undefined, [
+            {
+              "type":1,
+              "components":[
+                {
+                  "type":3,
+                  "custom_id":"select",
+                  "options":[
+                    {
+                      "label":buildCategories[0],
+                      "style":1,
+                      "value":`viewcat_${buildCategories[0]}`,
+                      "type":2,
+                      "emoji":{
+                        "name":"💿"
+                      }
+                    },
+                    {
+                      "label":buildCategories[1],
+                      "style":1,
+                      "value":`viewcat_${buildCategories[1]}`,
+                      "type":2,
+                      "emoji":{
+                        "name":"📱"
+                      }
+                    },
+                    {
+                      "label":buildCategories[2],
+                      "style":1,
+                      "value":`viewcat_${buildCategories[2]}`,
+                      "type":2,
+                      "emoji":{
+                        "name":"⚙️"
+                      }
+                    },
+                    {
+                      "label":buildCategories[3],
+                      "style":1,
+                      "value":`viewcat_${buildCategories[3]}`,
+                      "type":2,
+                      "emoji":{
+                        "name":"🎛"
+                      }
+                    },
+                    {
+                      "label":buildCategories[4],
+                      "style":1,
+                      "value":`viewcat_${buildCategories[4]}`,
+                      "type":2,
+                      "emoji":{
+                        "name":"🔌"
+                      }
+                    },
+                    {
+                      "label":buildCategories[5],
+                      "style":1,
+                      "value":`viewcat_${buildCategories[5]}`,
+                      "type":2,
+                      "emoji":{
+                        "name":"➕"
+                      }
                     }
-                  },
-                  {
-                    "label":buildCategories[1],
-                    "style":1,
-                    "value":`viewcat_${buildCategories[1]}`,
-                    "type":2,
-                    "emoji":{
-                      "name":"📱"
-                    }
-                  },
-                  {
-                    "label":buildCategories[2],
-                    "style":1,
-                    "value":`viewcat_${buildCategories[2]}`,
-                    "type":2,
-                    "emoji":{
-                      "name":"⚙️"
-                    }
-                  },
-                  {
-                    "label":buildCategories[3],
-                    "style":1,
-                    "value":`viewcat_${buildCategories[3]}`,
-                    "type":2,
-                    "emoji":{
-                      "name":"🎛"
-                    }
-                  },
-                  {
-                    "label":buildCategories[4],
-                    "style":1,
-                    "value":`viewcat_${buildCategories[4]}`,
-                    "type":2,
-                    "emoji":{
-                      "name":"🔌"
-                    }
-                  },
-                  {
-                    "label":buildCategories[5],
-                    "style":1,
-                    "value":`viewcat_${buildCategories[5]}`,
-                    "type":2,
-                    "emoji":{
-                      "name":"➕"
-                    }
-                  }
-                ],
-                "placeholder":"Select a category"
-              }
-            ]
-          },
-          {
-            "type":1,
-            "components":[
-              {
-                "type":2,
-                "custom_id":`build`,
-                "style":1,
-                "label":`Build package`
-              },
-              {
-                "type":2,
-                "custom_id":`clear`,
-                "style":4,
-                "label":`Clear session`,
-                "disabled":!sessionExists
-              }
-            ]
-          }
-        ], true)
-        break
+                  ],
+                  "placeholder":"Select a category"
+                }
+              ]
+            },
+            {
+              "type":1,
+              "components":[
+                {
+                  "type":2,
+                  "custom_id":`build`,
+                  "style":1,
+                  "label":`Build package`
+                },
+                {
+                  "type":2,
+                  "custom_id":`clear`,
+                  "style":4,
+                  "label":`Clear session`,
+                  "disabled":!sessionExists
+                }
+              ]
+            }
+          ], true)
+        })
+        break;
       }
       default:
         sendMessage(
