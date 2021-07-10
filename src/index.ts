@@ -233,7 +233,6 @@ app.post("/interactions", (req, res) => {
             embeds: embeds,
           },
         }
-      console.log(payload)
       return new Promise((resolve, reject) => {
         fetch(
           acked === true
@@ -248,7 +247,6 @@ app.post("/interactions", (req, res) => {
           }
         )
           .then((r) => {
-            r.json().then((j) => console.log(JSON.stringify(j)))
             acked = true
             return r
           })
@@ -917,7 +915,6 @@ app.post("/interactions", (req, res) => {
         })
       let builderData:BuilderApiJson = /* Temp */ JSON.parse(readFileSync("./buildermeta.json").toString())
       let selectedModuleName = interaction.data.values[0].split("viewmore_")[1]
-      console.log(builderStore.getCurrent(interaction.member?interaction.member.user.id:interaction.user.id))
       let moduleAlreadyAdded = builderStore.getCurrent(interaction.member?interaction.member.user.id:interaction.user.id).find(m => m.key == selectedModuleName)
       let options = Object.keys(builderData.modules).filter(mn => {
         return builderData.modules[mn].category == builderData.modules[selectedModuleName].category
