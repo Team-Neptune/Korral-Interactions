@@ -317,31 +317,48 @@ app.post("/interactions", (req, res) => {
         ack().then(() => {
           let deepsea = new DeepSea()
           let releases = deepsea.get()
+          let fields = [
+            {
+              "name":"Version",
+              "value":`[${releases[0].latestTag}](<https://github.com/Team-Neptune/DeepSea/releases/tag/${releases[0].latestTag}>)`,
+              "inline":true
+            },
+            {
+              "name":"Released",
+              "value":`<t:${new Date(releases[0].releaseDate).getTime()/1000}:D>`,
+              "inline":true
+            },
+            {
+              "name":"Total downloads",
+              "value":`${deepsea.getTotalDownloads()}`,
+              "inline":true
+            },
+            {
+              "name": "\u200B",
+              "value": "\u200B"
+            }
+          ]
+          //`**[${e.name.split(".")[0]}](<https://github.com/Team-Neptune/DeepSea/releases/download/${e.latestTag}/${e.name}>)**\n**📥 Download count**: ${e.downloadCount}\n`
+          releases.forEach((e) => {
+            fields.push({name:`${e.name.split(".")[0]}`, value:`[Download](<https://github.com/Team-Neptune/DeepSea/releases/download/${e.latestTag}/${e.name}>)`, inline:false})
+          })
+          fields.push({
+            "name":"Custom package",
+            'value':"[Build your own DeepSea package](https://builder.teamneptune.net)",
+            "inline":false
+          })
           sendMessageWithEmbeds(
-            `**Latest version**: [${
-              releases[0].latestTag
-            }](<https://github.com/Team-Neptune/DeepSea/releases/tag/${
-              releases[0].latestTag
-            }>)\n**Released**: ${new Date(
-              releases[0].releaseDate
-            ).toString()}\n\n${releases
-              .map((e) => {
-                return `**[${
-                  e.name.split(".")[0]
-                }](<https://github.com/Team-Neptune/DeepSea/releases/download/${
-                  e.latestTag
-                }/${e.name}>)**\n**📥 Download count**: ${e.downloadCount}\n`
-              })
-              .join(
-                "\n"
-              )}\n\n**🌐 Total downloads**: ${deepsea.getTotalDownloads()}`,
+            undefined,
             [
               {
+                title:"Get Deepsea",
+                color:1084877,
+                fields:fields,
                 footer: {
-                  text: "Last cached ",
+                  text: "Data last fetched",
                 },
-                timestamp: new Date(deepsea.getLastFetched()),
-              },
+                timestamp: new Date(deepsea.getLastFetched())
+              }
             ]
           )
         })
