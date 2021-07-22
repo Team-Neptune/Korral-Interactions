@@ -568,6 +568,35 @@ app.post("/interactions", (req, res) => {
         })
         break;
       }
+      case "lmgtfy":{
+        if(!config.bitly_token)
+          return sendMessage("`config#bitly_token` is not provided.")
+        const searchTerm:string = interaction.data.options[0].value
+        const target = interaction.data.options[1]
+        let searchURL:string = `https://letmegooglethat.com/?${new URLSearchParams(`q=${searchTerm}`)}`
+        fetch("https://api-ssl.bitly.com/v4/shorten", {
+          "method":"POST",
+          "headers":{
+            "Content-Type":"application/json",
+            "authorization":`Bearer ${config.bitly_token}`
+          },
+          "body":JSON.stringify({
+            "long_url": searchURL
+          })
+        })
+        .then(r => {
+          if(r.status == 201 || r.status == 200){
+            r.json().then(j => {
+              sendMessage(`${target?`*Target: <@${target.value}>*\n`:``}<${j.link}>`, target ? { users: [target.value] } : undefined)
+            })
+          }else{
+            sendMessage(`Failed to create link. Open an issue on [GitHub](https://github.com/Team-Neptune/Korral-Interactions) if the issue persists.`)
+            console.log(r.status)
+            r.json().then(console.error)
+          }
+        })
+        break;
+      }
       default:
         sendMessage(
           `Uh oh, that interaction wasn't found! 😬\nOpen an issue on [GitHub](https://github.com/Team-Neptune/Korral-Interactions) if the issue persists.`
