@@ -99,7 +99,8 @@ interface MessageComponent {
 export interface Config {
     public_key:string,
     port?:number,
-    bot_token:string
+    bot_token:string,
+    bitly_token?:string
 }
 
 export interface GitHubRelease {
