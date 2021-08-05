@@ -329,7 +329,7 @@ app.post("/interactions", (req, res) => {
           }
         }
         let os:SDLayoutOS = interaction.data.options[0].value
-        sendMessageWithEmbeds("If you are getting an error in hekate such as: Missing lp0 lib, Missing or old minerva lib or Update bootloader \nPlease check and make sure that you **extracted the contents of the SD folder onto your SD card**", [
+        sendMessageWithEmbeds("If you're getting one of the following errors: *Missing lp0 lib*, *Missing or old minerva lib*, *Update bootloader*\nor are getting a text-based version of hekate...\n\nYour SD card layout may be incorrect. Please confirm that you **extracted** the contents of the `sd` folder onto your SD card root.", [
           {
             "title":"✅ Correct Layout",
             "image":{
