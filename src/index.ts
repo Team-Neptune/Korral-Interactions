@@ -10,6 +10,7 @@ import {
   InteractionResponse,
   BuilderApiJson,
   BuilderApiModule,
+  SDLayoutOS,
 } from "../typings"
 import express from "express"
 import {
@@ -308,11 +309,42 @@ app.post("/interactions", (req, res) => {
           `For pirated eshop-games, forwarders and other unofficial stuff you need signature patches. You can download them seperatly via the included "Switch AIO updater" homebrew. As their general purpose is to allow piracy we're not providing any help with installation or problems of said patches or pirated games afterwards.`
         )
         break
-      case "sd":
-        sendMessage(
-          "If you are getting an error in hekate such as: Missing lp0 lib, Missing or old minerva lib or Update bootloader \nPlease check and make sure that you **extracted the contents of the SD folder onto your SD card**\n\nCorrect: [This](https://cdn.discordapp.com/attachments/649724928542900264/830211676355559424/correct_sd.png)\nIncorrect: [This](https://cdn.discordapp.com/attachments/649724928542900264/830211690813063208/incorrect_sd.png)"
-        )
-        break
+      case "sd":{
+        let images = {
+          "macos":{
+            "correct":"https://cdn.discordapp.com/attachments/649724928542900264/830211676355559424/correct_sd.png",
+            "incorrect":"https://cdn.discordapp.com/attachments/649724928542900264/830211690813063208/incorrect_sd.png"
+          },
+          "win10":{
+            "correct":"https://cdn.discordapp.com/attachments/824901291490803733/872709292682256425/correct_sd_windows.png",
+            "incorrect":"https://cdn.discordapp.com/attachments/824901291490803733/872709305688789063/incorrect_sd_windows.png"
+          },
+          "winxp":{
+            "correct":"https://cdn.discordapp.com/attachments/824901291490803733/872709375775637554/correct_sd_windowsxp.PNG",
+            "incorrect":"https://cdn.discordapp.com/attachments/824901291490803733/872709387356102666/incorrect_sd_windowsxp.PNG"
+          },
+          "mint20":{
+            "correct":"https://cdn.discordapp.com/attachments/824901291490803733/872718048333811732/unknown.png",
+            "incorrect":"https://cdn.discordapp.com/attachments/824901291490803733/872717930238996530/unknown.png"
+          }
+        }
+        let os:SDLayoutOS = interaction.data.options[0].value
+        sendMessageWithEmbeds("If you are getting an error in hekate such as: Missing lp0 lib, Missing or old minerva lib or Update bootloader \nPlease check and make sure that you **extracted the contents of the SD folder onto your SD card**", [
+          {
+            "title":"✅ Correct Layout",
+            "image":{
+              "url":`${images[os].correct}`
+            }
+          },
+          {
+            "title":"❌ Incorrect Layout",
+            "image":{
+              "url":`${images[os].incorrect}`
+            }
+          }
+        ])
+        break;
+      }
       case "deepsea":
         ack().then(() => {
           let deepsea = new DeepSea()

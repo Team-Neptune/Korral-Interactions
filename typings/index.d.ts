@@ -136,3 +136,5 @@ interface BuilderApiJson {
 }
 
 type BuilderCategory = "CFW & Bootloaders" | "Homebrew Apps" | "Sysmodules" | "Overlays" | "Payloads" | "Addons"
+
+type SDLayoutOS = "win10" | "winxp" | "macos" | "mint20"
