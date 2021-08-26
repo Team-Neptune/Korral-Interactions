@@ -46,14 +46,22 @@ async function checkForLatestBuildApi() {
     return true
   }
   console.log(`Fetching latest builder data from '${builder_api}'...`)
-  const response = await fetch(builder_api, {
-      "method":"GET"
-  })
-  let data = (await response.json() as BuilderApiJson)
-  data.lastUpdated = data.lastUpdated + 3900
-  writeFileSync("./buildermeta.json", JSON.stringify(data))
-  console.log("Latest builder data fetched!")
-  return true
+  try {
+    const response = await fetch(builder_api, {
+        "method":"GET"
+    })
+    let data = (await response.json() as BuilderApiJson)
+    data.lastUpdated = data.lastUpdated + 3900
+    writeFileSync("./buildermeta.json", JSON.stringify(data))
+    console.log("Latest builder data fetched!")
+    Object.keys(current.modules).map(moduleName => {
+      return current.modules[moduleName].category
+    }).forEach((builderCat, index, array) => {
+      if(!buildCategories.includes(builderCat))
+        buildCategories.push(builderCat)
+    })
+    return true
+  }catch(err){console.error(err)}
 }
 checkForLatestBuildApi()
 
