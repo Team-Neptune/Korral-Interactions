@@ -77,18 +77,6 @@ builder.on('new', (userID) => {
   builderStore.start(userID, starterMoodules)
 })
 
-builder.on('clear', (userID) => {
-  builderStore.cancel(userID)
-})
-
-builder.on('add', (userID, module) => {
-  builderStore.addItem(userID, module)
-})
-
-builder.on('remove', (userID, module) => {
-  builderStore.removeItem(userID, module)
-})
-
 builder.getCurrent = (userID:string) => {
   return builderStore.getCurrent(userID)
 }
@@ -623,7 +611,7 @@ app.post("/interactions", (req, res) => {
 
   //Clear session
   if(interaction.type == InteractionType.MESSAGE_COMPONENT && interaction.data && interaction.data.component_type == 2 && interaction.data.custom_id == "clear"){
-    builder.emit('clear', interaction.member?interaction.member.user.id:interaction.user.id)
+    builderStore.cancel(interaction.member?interaction.member.user.id:interaction.user.id)
     return interaction.update({
       "content":`Session has been cleared. Run the /builder command to start a new session.`,
       "components":[]
@@ -645,7 +633,7 @@ app.post("/interactions", (req, res) => {
       return v
     })
     builderData.modules[selectedModuleName].key = selectedModuleName;
-    builder.emit("add", interaction.member?interaction.member.user.id:interaction.user.id, builderData.modules[selectedModuleName])
+    builderStore.addItem(interaction.member?interaction.member.user.id:interaction.user.id, builderData.modules[selectedModuleName])
     interaction.update({
       "components":[
         {
@@ -721,7 +709,7 @@ app.post("/interactions", (req, res) => {
       return v
     })
     builderData.modules[selectedModuleName].key = selectedModuleName;
-    builder.emit("remove", interaction.member?interaction.member.user.id:interaction.user.id, builderData.modules[selectedModuleName])
+    builderStore.removeItem(interaction.member?interaction.member.user.id:interaction.user.id, builderData.modules[selectedModuleName])
     interaction.update({
       "components":[
         {
