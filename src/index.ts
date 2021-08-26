@@ -30,11 +30,19 @@ const public_key = process.env.public_key || config.public_key
 let builder = new Builder()
 let builderStore = new BuilderStore()
 
+let buildCategories = []
+
 //Get latest builder API data
 async function checkForLatestBuildApi() {
   let current = existsSync("./buildermeta.json")?(JSON.parse(readFileSync("./buildermeta.json").toString()) as BuilderApiJson):undefined
   if(current  && (current.lastUpdated * 1000) > Date.now()){
     console.log(`Cached builder data new enough, valid until ${new Date(current.lastUpdated * 1000).toString()}`)
+    Object.keys(current.modules).map(moduleName => {
+      return current.modules[moduleName].category
+    }).forEach((builderCat, index, array) => {
+      if(!buildCategories.includes(builderCat))
+        buildCategories.push(builderCat)
+    })
     return true
   }
   console.log(`Fetching latest builder data from '${builder_api}'...`)
@@ -499,14 +507,6 @@ app.post("/interactions", (req, res) => {
         break
       }
       case "builder":{
-        const buildCategories = [
-          "CFW & Bootloaders",
-          "Homebrew Apps",
-          "Sysmodules",
-          "Overlays",
-          "Payloads",
-          "Addons"
-        ]
         let sessionExists = builderStore.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id)
         if(!sessionExists)
           builder.emit("new", interaction.member?interaction.member.user.id:interaction.user.id)
@@ -519,62 +519,14 @@ app.post("/interactions", (req, res) => {
                 {
                   "type":3,
                   "custom_id":"select",
-                  "options":[
-                    {
-                      "label":buildCategories[0],
+                  "options":buildCategories.map(catName => {
+                    return {
+                      "label":catName,
                       "style":1,
-                      "value":`viewcat_${buildCategories[0]}`,
-                      "type":2,
-                      "emoji":{
-                        "name":"💿"
-                      }
-                    },
-                    {
-                      "label":buildCategories[1],
-                      "style":1,
-                      "value":`viewcat_${buildCategories[1]}`,
-                      "type":2,
-                      "emoji":{
-                        "name":"📱"
-                      }
-                    },
-                    {
-                      "label":buildCategories[2],
-                      "style":1,
-                      "value":`viewcat_${buildCategories[2]}`,
-                      "type":2,
-                      "emoji":{
-                        "name":"⚙️"
-                      }
-                    },
-                    {
-                      "label":buildCategories[3],
-                      "style":1,
-                      "value":`viewcat_${buildCategories[3]}`,
-                      "type":2,
-                      "emoji":{
-                        "name":"🎛"
-                      }
-                    },
-                    {
-                      "label":buildCategories[4],
-                      "style":1,
-                      "value":`viewcat_${buildCategories[4]}`,
-                      "type":2,
-                      "emoji":{
-                        "name":"🔌"
-                      }
-                    },
-                    {
-                      "label":buildCategories[5],
-                      "style":1,
-                      "value":`viewcat_${buildCategories[5]}`,
-                      "type":2,
-                      "emoji":{
-                        "name":"➕"
-                      }
+                      "value":`viewcat_${catName}`,
+                      "type":2
                     }
-                  ],
+                  }),
                   "placeholder":"Select a category"
                 }
               ]
@@ -829,14 +781,6 @@ app.post("/interactions", (req, res) => {
         "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session. If this is occurring multiple times, and it hasn't been 15 minutes, open an issue on the [GitHub Repo](<https://github.com/Team-Neptune/Korral-Interactions>).`,
         "components":[]
       })
-    const buildCategories = [
-      "CFW & Bootloaders",
-      "Homebrew Apps",
-      "Sysmodules",
-      "Overlays",
-      "Payloads",
-      "Addons"
-    ]
     builderStore.menuInteraction(interaction.member?interaction.member.user.id:interaction.user.id)
     interaction.update({
       "content":`**DeepSea Custom Package Builder**\nSelect a category below to view a list of packages you can add to your custom deepsea package.`,
@@ -847,62 +791,14 @@ app.post("/interactions", (req, res) => {
             {
               "type":3,
               "custom_id":"select",
-              "options":[
-                {
-                  "label":buildCategories[0],
+              "options":buildCategories.map(catName => {
+                return {
+                  "label":catName,
                   "style":1,
-                  "value":`viewcat_${buildCategories[0]}`,
-                  "type":2,
-                  "emoji":{
-                    "name":"💿"
-                  }
-                },
-                {
-                  "label":buildCategories[1],
-                  "style":1,
-                  "value":`viewcat_${buildCategories[1]}`,
-                  "type":2,
-                  "emoji":{
-                    "name":"📱"
-                  }
-                },
-                {
-                  "label":buildCategories[2],
-                  "style":1,
-                  "value":`viewcat_${buildCategories[2]}`,
-                  "type":2,
-                  "emoji":{
-                    "name":"⚙️"
-                  }
-                },
-                {
-                  "label":buildCategories[3],
-                  "style":1,
-                  "value":`viewcat_${buildCategories[3]}`,
-                  "type":2,
-                  "emoji":{
-                    "name":"🎛"
-                  }
-                },
-                {
-                  "label":buildCategories[4],
-                  "style":1,
-                  "value":`viewcat_${buildCategories[4]}`,
-                  "type":2,
-                  "emoji":{
-                    "name":"🔌"
-                  }
-                },
-                {
-                  "label":buildCategories[5],
-                  "style":1,
-                  "value":`viewcat_${buildCategories[5]}`,
-                  "type":2,
-                  "emoji":{
-                    "name":"➕"
-                  }
+                  "value":`viewcat_${catName}`,
+                  "type":2
                 }
-              ],
+              }),
               "placeholder":"Select a category"
             }
           ]
