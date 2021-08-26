@@ -101,7 +101,7 @@ app.use("/interactions", (req, res, next) => {
       .catch(rej)
     })
   }
-  req.body.reply = (msg:InteractionResponse) => {
+  req.body.reply = (options:InteractionResponse) => {
     return new Promise((res, rej) => {
       fetch(`${discord_api}/interactions/${interaction.id}/${interaction.token}/callback`, {
         "method":"POST",
@@ -110,7 +110,7 @@ app.use("/interactions", (req, res, next) => {
         },
         "body":JSON.stringify({
           type:4,
-          data:msg
+          data:options
         })
       })
       .then(res)
@@ -578,6 +578,22 @@ app.post("/interactions", (req, res) => {
         })
         break;
       }
+      case "hekatesdmount":{
+        sendMessage(`https://cdn.discordapp.com/attachments/710631969993654334/872967960946413618/select_tools_menu.png`, undefined, [
+          {
+            "type":1,
+            "components":[
+              {
+                "custom_id":`hekatesdmount_page_2_${interaction.member.user.id}`,
+                "label":"Next Step",
+                "type":2,
+                "style":2
+              }
+            ]
+          }
+        ])
+        break;
+      }
       default:
         sendMessage(
           `Uh oh, that interaction wasn't found! 😬\nOpen an issue on [GitHub](https://github.com/Team-Neptune/Korral-Interactions) if the issue persists.`
@@ -587,6 +603,52 @@ app.post("/interactions", (req, res) => {
   }
 
   //Buttons
+
+  //Hekate SD command
+  if(interaction.type == InteractionType.MESSAGE_COMPONENT && interaction.data && interaction.data.component_type == 2 && interaction.data.custom_id.startsWith("hekatesdmount_page")){
+    let pages = {
+      1:"https://cdn.discordapp.com/attachments/710631969993654334/872967960946413618/select_tools_menu.png",
+      2:"https://cdn.discordapp.com/attachments/710631969993654334/872967970652045362/tools_menu_select_usb_tools.png",
+      3:"https://cdn.discordapp.com/attachments/710631969993654334/872967979388764250/usb_tools_select_sdcard.png"
+    }
+    let newPageNumber = Number(interaction.data.custom_id.split("_")[2])
+    let authorID = interaction.data.custom_id.split("_")[3]
+    let buttons = []
+    if(pages[newPageNumber-1])
+      buttons.push({
+        "custom_id":`hekatesdmount_page_${newPageNumber-1}_${interaction.member.user.id}`,
+        "label":"Previous Step",
+        "type":2,
+        "style":2
+      })
+    if(pages[newPageNumber+1])
+      buttons.push({
+        "custom_id":`hekatesdmount_page_${newPageNumber+1}_${interaction.member.user.id}`,
+        "label":"Next Step",
+        "type":2,
+        "style":2
+      })
+    if(authorID != interaction.member.user.id)
+      return interaction.reply({
+        "content":`Hey there, this is someone elses message. However, here's your own selector and the [page](${pages[newPageNumber]}) you requested:`,
+        "components":[
+          {
+            "type":1,
+            "components":buttons
+          }
+        ],
+        "flags":64,
+      })
+    interaction.update({
+      "content":`${pages[newPageNumber]}`,
+      "components":[
+        {
+          "type":1,
+          "components":buttons
+        }
+      ]
+    })
+  }
 
   //Build package
   if(interaction.type == InteractionType.MESSAGE_COMPONENT && interaction.data && interaction.data.component_type == 2 && interaction.data.custom_id == "build"){
