@@ -3,10 +3,9 @@ import Command from "../classes/Command";
 export default new Command({
     execute(interaction){
         let builder = interaction.packageBuilder.builder
-        let builder = interaction.packageBuilder.store
         let sessionExists = builder.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id)
         if(!sessionExists)
-          builder.emit("new", interaction.member?interaction.member.user.id:interaction.user.id)
+          builder.startSession(interaction.member?interaction.member.user.id:interaction.user.id)
         builder.menuInteraction(interaction.member?interaction.member.user.id:interaction.user.id)
         interaction.packageBuilder.checkForLatestBuildApi()
         interaction.reply({
