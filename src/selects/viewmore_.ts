@@ -5,21 +5,21 @@ import ButtonCommand from "../classes/ButtonCommand";
 export default new ButtonCommand({
     checkType:"STARTS_WITH",
     execute(interaction){
-        let builderStore = interaction.packageBuilder.store
-        if(!builderStore.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id))
+        let builder = interaction.packageBuilder.store
+        if(!builder.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id))
             return interaction.update({
             "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session. If this is occurring multiple times, and it hasn't been 15 minutes, open an issue on the [GitHub Repo](<https://github.com/Team-Neptune/Korral-Interactions>).`,
             "components":[]
             })
         let builderData:BuilderApiJson = JSON.parse(readFileSync("./buildermeta.json").toString())
         let selectedModuleName = interaction.data.values[0].split("viewmore_")[1]
-        let moduleAlreadyAdded = builderStore.getCurrent(interaction.member?interaction.member.user.id:interaction.user.id).find(m => m.key == selectedModuleName)
+        let moduleAlreadyAdded = builder.getCurrent(interaction.member?interaction.member.user.id:interaction.user.id).find(m => m.key == selectedModuleName)
         let options = Object.keys(builderData.modules).filter(mn => {
             return builderData.modules[mn].category == builderData.modules[selectedModuleName].category
         }).map(v => {
             return v
         })
-        builderStore.menuInteraction(interaction.member?interaction.member.user.id:interaction.user.id)
+        builder.menuInteraction(interaction.member?interaction.member.user.id:interaction.user.id)
         interaction.update({
             "content":`**${builderData.modules[selectedModuleName].category}** | ${builderData.modules[selectedModuleName].displayName}\nBy: ${builderData.modules[selectedModuleName].repo.split("/")[0]}\n\n${builderData.modules[selectedModuleName].description}${builderData.modules[selectedModuleName].requires.length > 0?`\n\n**Module requirements**\nEven if not selected, the following modules are required and will be added:\n- ${builderData.modules[selectedModuleName].requires.map(moduleName => builderData.modules[moduleName].displayName).join("\n- ")}`:``}\n\n${builderData.modules[selectedModuleName].required?`*${builderData.modules[selectedModuleName].displayName} is required and cannot be removed.*`:``}`,
             "components":[

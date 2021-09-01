@@ -3,13 +3,13 @@ import ButtonCommand from "../classes/ButtonCommand";
 export default new ButtonCommand({
     checkType:"EQUALS",
     execute(interaction){
-        let builderStore = interaction.packageBuilder.store
-        if(!builderStore.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id))
+        let builder = interaction.packageBuilder.store
+        if(!builder.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id))
             return interaction.update({
             "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session. If this is occurring multiple times, and it hasn't been 15 minutes, open an issue on the [GitHub Repo](<https://github.com/Team-Neptune/Korral-Interactions>).`,
             "components":[]
             })
-        builderStore.menuInteraction(interaction.member?interaction.member.user.id:interaction.user.id)
+        builder.menuInteraction(interaction.member?interaction.member.user.id:interaction.user.id)
         interaction.update({
             "content":`**DeepSea Custom Package Builder**\nSelect a category below to view a list of packages you can add to your custom deepsea package.`,
             "components":[
