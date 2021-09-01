@@ -1,6 +1,6 @@
 {
   "name": "korral-interactions",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "The Express webserver for the interactions of Korral in the Team Neptune Discord server.",
   "main": "out/src/index.js",
   "types": "typings/",
@@ -16,9 +16,8 @@
     "@types/node-fetch": "^2.5.11"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node out/src/index.js",
-    "build": "tsc"
+    "build": "tsc --build tsconfig.json"
   },
   "keywords": [],
   "author": "TechGeekGamer",

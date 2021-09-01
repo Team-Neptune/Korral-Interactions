@@ -1,3 +1,5 @@
+import Builder from "../src/builder";
+
 interface ApplicationCommandInteractionDataOption {
     name:string,
     type:number,
@@ -44,8 +46,17 @@ interface InteractionMember {
     permissions?:string
 }
 
+interface AllowedMentions {
+    parse?: string[],
+    users?:string[],
+    roles?:string[]
+}
+
 type InteractionType = 1 | 2 | 3;
 
+export interface InteractionAckOptions {
+    ephemeral:Boolean
+}
 export interface Interaction {
     id:string,
     application_id:string,
@@ -58,9 +69,19 @@ export interface Interaction {
     token:string,
     version:number,
     message?:any,
-    update(msg:InteractionResponse):Promise<Response>,
+    update?(msg:InteractionResponse):Promise<Response>,
     reply(msg:InteractionResponse):Promise<Response>,
-    ack(msg:InteractionResponse):Promise<Response>
+    ack(msg:InteractionAckOptions):Promise<Response>,
+    packageBuilder:{
+        builder:Builder,
+        store:Builder,
+        checkForLatestBuildApi():Promise<Boolean>,
+        buildCategories:BuilderCategory[],
+        builderData?:BuilderApiJson
+    },
+    internalBot:{
+        config:Config
+    }
 }
 
 export interface InteractionResponse {
@@ -68,11 +89,10 @@ export interface InteractionResponse {
     data?:InteractionResponse,
     content?: string,
     components?: MessageComponent[],
-    allowed_mentions?: {
-      parse: string[]
-    },
+    allowed_mentions?:AllowedMentions,
     embeds?:any[],
-    flags?:number
+    flags?:number,
+    ephemeral?:Boolean
 }
 
 interface ButtonConfig {
