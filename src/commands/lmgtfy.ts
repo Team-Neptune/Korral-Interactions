@@ -1,5 +1,5 @@
 import Command from "../classes/Command";
-
+import fetch from 'node-fetch'
 export default new Command({
     execute(interaction){
         if(!interaction.internalBot.config.bitly_token)
