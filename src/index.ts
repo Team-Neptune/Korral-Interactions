@@ -66,18 +66,6 @@ function checkForLatestBuildApi() {
 }
 checkForLatestBuildApi()
 
-builder.on('new', (userID) => {
-  let builderData:BuilderApiJson = /* Temp */ JSON.parse(readFileSync("./buildermeta.json").toString())
-  let starterMoodules = Object.keys(builderData.modules).filter(moduleName => {
-    return builderData.modules[moduleName].required == true
-  }).map(moduleName => {
-    let module:BuilderApiModule = builderData.modules[moduleName]
-    module.key = moduleName
-    return module;
-  })
-  builderStore.start(userID, starterMoodules)
-})
-
 builder.getCurrent = (userID:string) => {
   return builder.getCurrent(userID)
 }
