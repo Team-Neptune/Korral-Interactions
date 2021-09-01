@@ -1,31 +1,85 @@
-import { BuilderApiModule } from "../typings"
-import {EventEmitter} from 'events'
+import {readFileSync} from 'fs'
+import { BuilderApiJson, BuilderApiModule, BuilderCategory } from "../typings";
 
-interface BuilderEmitterEvents {
-    'new': (userID: string) => void;
-    'add':(userID: string, module: BuilderApiModule) => void;
-    'remove':(userID: string, module: BuilderApiModule) => void;
-    'clear': (userID: string) => void;
-}
+interface UserBuildStore {
+    timer:any,
+    modules:BuilderApiModule[]
+};
 
-class BuilderEmitter extends EventEmitter {
-    constructor() {
-        super();
+interface BuilderUserStore {
+    [userID:string]:UserBuildStore
+};
+
+class BuilderStore {
+    store:BuilderUserStore;
+    constructor(){
+        this.store = {};
+    };
+    /** Create a store */
+    start(userID:string, starterModules:BuilderApiModule[]){
+        this.store[userID] = {
+            "modules":starterModules || [],
+            "timer":setTimeout(() => {
+                this.store[userID] = undefined;
+            }, 900000)
+        }
     }
-}
+    startSession(userID){
+        let builderData:BuilderApiJson = JSON.parse(readFileSync("./buildermeta.json").toString())
+        let starterMoodules = Object.keys(builderData.modules).filter(moduleName => {
+          return builderData.modules[moduleName].required == true
+        }).map(moduleName => {
+          let module:BuilderApiModule = builderData.modules[moduleName]
+          module.key = moduleName
+          return module;
+        })
+        this.start(userID, starterMoodules)
+    }
+    /** Reset the 15 minute timeout for data storing */
+    resetTimer(userID:string){
+        clearTimeout(this.store[userID].timer)
+        this.store[userID].timer = setTimeout(() => {
+            this.store[userID] = undefined;
+        }, 900000)
+    }
+    addItem(userID:string, item:BuilderApiModule){
+        this.resetTimer(userID)
+        this.store[userID].modules.push(item)
+    }
+    removeItem(userID:string, item:BuilderApiModule){
+        this.resetTimer(userID)
+        this.store[userID].modules = this.store[userID].modules.filter(i => i != item)
+    }
+    getCurrent(userID:string){
+        return this.store[userID].modules
+    }
+    menuInteraction(userID:string){
+        this.resetTimer(userID)
+    }
+    sessionExists(userID:string){
+        return this.store[userID]?true:false
+    }
+    generateBuildURL(userID:string){
+        //Add module required modules
+        this.store[userID].modules.forEach(m => {
+            m.requires.forEach(mn => {
+                if(!this.store[userID].modules.find(module => module.key == mn)){
+                    let builderData:BuilderApiJson = JSON.parse(readFileSync("./buildermeta.json").toString())
+                    builderData.modules[mn].key = mn
+                    this.store[userID].modules.push(builderData.modules[mn])
+                }
+            })
+        })
+        let url = "https://builder.teamneptune.net/build/";
+        url = url + this.store[userID].modules.map(m => m.key).join(";");
+        this.cancel(userID)
+        return url;
+    }
+    /** Delete the current user's builder store */
+    cancel(userID:string){
+        clearTimeout(this.store[userID].timer)
+        this.store[userID] = undefined;
+    };
+};
 
-declare interface BuilderEmitter {
-    on<U extends keyof BuilderEmitterEvents>(
-      event: U, listener: BuilderEmitterEvents[U]
-    ): this;
-  
-    emit<U extends keyof BuilderEmitterEvents>(
-      event: U, ...args: Parameters<BuilderEmitterEvents[U]>
-    ): boolean;
-    
-    /** Get currently selected modules */
-    getCurrent(userID:string)
-}
-
-/** plz work (Remove before push) */
-export default BuilderEmitter
+export default BuilderStore;
