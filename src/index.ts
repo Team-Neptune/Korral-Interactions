@@ -66,10 +66,6 @@ function checkForLatestBuildApi() {
 }
 checkForLatestBuildApi()
 
-builder.getCurrent = (userID:string) => {
-  return builder.getCurrent(userID)
-}
-
 app.use("/interactions", verifyKeyMiddleware(public_key))
 
 //Set props/methods
