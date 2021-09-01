@@ -1,5 +1,4 @@
 import Builder from "../src/builder";
-import Builder from '../src/builder'
 
 interface ApplicationCommandInteractionDataOption {
     name:string,
