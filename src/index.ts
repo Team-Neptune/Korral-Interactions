@@ -20,7 +20,6 @@ import {
   InteractionResponseType,
 } from "discord-interactions"
 import DeepSea from "./deepsea"
-import BuilderStore from "./builderStore"
 const discord_api = "https://discord.com/api/v9"
 const builder_api = "https://builder.teamneptune.net/meta.json"
 const app = express()
@@ -29,7 +28,6 @@ const public_key = process.env.public_key || config.public_key
 
 //Builder
 let builder = new Builder()
-let builderStore = new BuilderStore()
 
 let buildCategories = []
 
@@ -81,7 +79,7 @@ builder.on('new', (userID) => {
 })
 
 builder.getCurrent = (userID:string) => {
-  return builderStore.getCurrent(userID)
+  return builder.getCurrent(userID)
 }
 
 app.use("/interactions", verifyKeyMiddleware(public_key))
@@ -91,7 +89,7 @@ app.use("/interactions", (req, res, next) => {
   const interaction: Interaction = req.body
   req.body.packageBuilder = {
     builder:builder,
-    store:builderStore,
+    store:builder,
     checkForLatestBuildApi:checkForLatestBuildApi,
     buildCategories:buildCategories
   }
@@ -244,7 +242,7 @@ app.post("/interactions", (req, res) => {
 
   //Selects
   if(interaction.type == InteractionType.MESSAGE_COMPONENT && interaction.data && interaction.data.component_type == 3){
-    if(!builderStore.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id))
+    if(!builder.sessionExists(interaction.member?interaction.member.user.id:interaction.user.id))
       return interaction.update({
         "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session. If this is occurring multiple times, and it hasn't been 15 minutes, open an issue on the [GitHub Repo](<https://github.com/Team-Neptune/Korral-Interactions>).`,
         "components":[]
