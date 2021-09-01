@@ -11,7 +11,7 @@ export default new ButtonCommand({
             "content":`Your session wasn't found. It may have timed out due to no interaction after 15 minutes. Please run the /builder command to start a new session. If this is occurring multiple times, and it hasn't been 15 minutes, open an issue on the [GitHub Repo](<https://github.com/Team-Neptune/Korral-Interactions>).`,
             "components":[]
             })
-        let builderData:BuilderApiJson = /* Temp */ JSON.parse(readFileSync("./buildermeta.json").toString())
+        let builderData:BuilderApiJson = JSON.parse(readFileSync("./buildermeta.json").toString())
         let selectedModuleName = interaction.data.values[0].split("viewmore_")[1]
         let moduleAlreadyAdded = builderStore.getCurrent(interaction.member?interaction.member.user.id:interaction.user.id).find(m => m.key == selectedModuleName)
         let options = Object.keys(builderData.modules).filter(mn => {
