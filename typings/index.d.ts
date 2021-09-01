@@ -1,4 +1,4 @@
-import BuilderStore from "../src/builderStore";
+import Builder from "../src/builder";
 import Builder from '../src/builder'
 
 interface ApplicationCommandInteractionDataOption {
@@ -75,7 +75,7 @@ export interface Interaction {
     ack(msg:InteractionAckOptions):Promise<Response>,
     packageBuilder:{
         builder:Builder,
-        store:BuilderStore,
+        store:Builder,
         checkForLatestBuildApi():Promise<Boolean>,
         buildCategories:BuilderCategory[],
         builderData?:BuilderApiJson
