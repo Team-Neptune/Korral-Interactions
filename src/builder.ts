@@ -10,7 +10,7 @@ interface BuilderUserStore {
     [userID:string]:UserBuildStore
 };
 
-class BuilderStore {
+class Builder {
     store:BuilderUserStore;
     constructor(){
         this.store = {};
@@ -82,4 +82,4 @@ class BuilderStore {
     };
 };
 
-export default BuilderStore;
+export default Builder;
