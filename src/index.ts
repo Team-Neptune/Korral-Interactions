@@ -211,7 +211,7 @@ app.post("/interactions", (req, res) => {
 
   // Selects
   if(interaction.type == InteractionType.MESSAGE_COMPONENT && interaction.data && interaction.data.component_type == 3){
-    let builderData:BuilderApiJson = /* Temp */ JSON.parse(readFileSync("./buildermeta.json").toString())
+    let builderData:BuilderApiJson = JSON.parse(readFileSync("./buildermeta.json").toString())
     try {
       interaction.packageBuilder.builderData = builderData
       // Check for matching value in src/selects/
