@@ -16,9 +16,8 @@
     "@types/node-fetch": "^2.5.11"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node out/src/index.js",
-    "build": "tsc"
+    "build": "tsc --build tsconfig.json"
   },
   "keywords": [],
   "author": "TechGeekGamer",
