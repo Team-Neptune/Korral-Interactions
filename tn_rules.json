@@ -5,19 +5,19 @@
     },
     "2":{
         "title":"No self promoting.",
-        "content":"Please. No one wants to see your Call of duty 360 no scope videos"
+        "content":"We don't want this server to become full of self promotion spam. If you're unsure if it's ok to share something, contact a moderator."
     },
     "3":{
         "title":"No Piracy",
-        "content":"This includes anything from Blawar or SX OS."
+        "content":"We don't support piracy in this server. This includes anything from Blawar (tinfoil, etc) or SX OS."
     },
     "4":{
         "title":"Don’t randomly ping people",
-        "content":"Some of us are hard at work or at school. Only ping a mod when there’s someone breaking the rules."
+        "content":"We want to help you, but some of us are hard at work or at school. Please only ping an online mod when there’s someone breaking the rules. If there's no online moderators and there's an emergency such as a raid, you may ping the entire moderator role."
     },
     "5":{
         "title":"We loosely follow the Discord TOS",
-        "content":"We won’t ban or kick for the usage of GooseMod or Better Discord but we will kick if we detect that you are younger then 13."
+        "content":"We won’t ban or kick for the usage of GooseMod or Better Discord but if you break obvious rules or laws then we will take measures."
     },
     "6":{
         "title":"No NSFW/L",
@@ -25,10 +25,10 @@
     },
     "7":{
         "title":"No Mini-Modding",
-        "content":"We have chosen the people that we feel should moderate. If someone is breaking a rule, tag an active moderator."
+        "content":"We have chosen the people that we feel should moderate. If someone is breaking a rule, please mention an online/active moderator."
     },
     "8":{
         "title":"Chat in the correct channel",
-        "content":"We love having you talk, but make sure it's in the correct channel."
+        "content":"We love having you talk, but please make sure it's in the correct channel. We have channels to try to keep things neat."
     }
 }
