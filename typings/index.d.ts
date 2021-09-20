@@ -1,5 +1,18 @@
 import Builder from "../src/builder";
 
+interface Message {
+    content?: string,
+    components?: MessageComponent[],
+    allowed_mentions?:AllowedMentions,
+    embeds?:any[]
+}
+
+interface ThreadCreateOptions {
+    name:string,
+    auto_archive_duration:60 | 1440,
+    type:11
+}
+
 interface ApplicationCommandInteractionDataOption {
     name:string,
     type:number,
@@ -69,9 +82,13 @@ export interface Interaction {
     token:string,
     version:number,
     message?:any,
+    acked:boolean,
     update?(msg:InteractionResponse):Promise<Response>,
     reply(msg:InteractionResponse):Promise<Response>,
     ack(msg:InteractionAckOptions):Promise<Response>,
+    createSupportThread(shortDesc:string):Promise<any>,
+    sendMessage(channelId:string, msg:Message),
+    joinThread(channelId:string):Promise<Response>,
     packageBuilder:{
         builder:Builder,
         store:Builder,
@@ -120,7 +137,9 @@ export interface Config {
     public_key:string,
     port?:number,
     bot_token:string,
-    bitly_token?:string
+    bitly_token?:string,
+    supportChannelId?:string,
+    supportRoleId?:string
 }
 
 export interface GitHubRelease {
