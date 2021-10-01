@@ -29,11 +29,12 @@ export default new Command({
       releases.forEach((e) => {
         fields.push({name:`${e.name.split(".")[0]}`, value:`[Download](<https://github.com/Team-Neptune/DeepSea/releases/download/${e.latestTag}/${e.name}>)`, inline:false})
       })
-      fields.push({
-        "name":"Custom package",
-        'value':"[Build your own DeepSea package](https://builder.teamneptune.net)",
-        "inline":false
-      })
+      // Disabled until uptime reliability increases
+      // fields.push({
+      //   "name":"Custom package",
+      //   'value':"[Build your own DeepSea package](https://builder.teamneptune.net)",
+      //   "inline":false
+      // })
       interaction.reply({
           embeds:[
               {
