@@ -165,6 +165,23 @@ app.use("/interactions", (req, res, next) => {
       .catch(reject)
     })
   }
+  req.body.lockThread = (channelId:string) => {
+    return new Promise((resolve, reject) => {
+      fetch(`${discord_api}/channels/${channelId}`, {
+        "method":"PATCH",
+        headers:{
+          "authorization":`Bot ${config.bot_token}`,
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          archived:true,
+          locked:true
+        })
+      })
+      .then(resolve)
+      .catch(reject)
+    })
+  }
   if(interaction.type == InteractionType.MESSAGE_COMPONENT){
     req.body.update = (msg:InteractionResponse) => {
       if(msg.ephemeral)

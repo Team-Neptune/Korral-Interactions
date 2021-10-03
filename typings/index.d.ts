@@ -89,6 +89,7 @@ export interface Interaction {
     createSupportThread(shortDesc:string):Promise<any>,
     sendMessage(channelId:string, msg:Message),
     joinThread(channelId:string):Promise<Response>,
+    lockThread(channelId:string):Promise<Response>,
     packageBuilder:{
         builder:Builder,
         store:Builder,
