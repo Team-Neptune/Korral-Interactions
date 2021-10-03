@@ -8,7 +8,7 @@ export default new ButtonCommand({
         let threadChannelId = interaction.message.channel_id;
         if(currentUserId != userId && !interaction.member.roles.includes(interaction.internalBot.config.supportRoleId))
             return interaction.reply({
-                content:`This isn't a ticket you can manage.`,
+                content:`You can't close a ticket that isn't yours.`,
                 ephemeral:true
             })
         interaction.reply({
