@@ -71,6 +71,8 @@ checkForLatestBuildApi()
 
 app.use("/interactions", verifyKeyMiddleware(public_key))
 
+let hasActiveTickets = {}
+
 //Set props/methods
 app.use("/interactions", (req, res, next) => {
   const interaction: Interaction = req.body
@@ -133,13 +135,33 @@ app.use("/interactions", (req, res, next) => {
       interaction.acked = true;
     })
   }
-  req.body.createSupportThread = (shortDesc:string) => {
+  req.body.lockThread = (channelId:string) => {
+    return new Promise((resolve, reject) => {
+      fetch(`${discord_api}/channels/${channelId}`, {
+        "method":"PATCH",
+        headers:{
+          "authorization":`Bot ${config.bot_token}`,
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          archived:true,
+          locked:true
+        })
+      })
+      .then(resolve)
+      .catch(reject)
+    })
+  }
+  req.body.createSupportThread = (shortDesc:string, userId:string) => {
     let options:ThreadCreateOptions = {
       name:`[Support] ${shortDesc}`,
       auto_archive_duration:1440,
       type:11
     }
     return new Promise((resolve, reject) => {
+      if(hasActiveTickets[userId])
+        return resolve(`You already have a ticket opened. Please close the ticket you currently have before opening a new one.`)
+      hasActiveTickets[userId] = true;
       fetch(`${discord_api}/channels/${config.supportChannelId}/threads`, {
         "method":"POST",
         headers:{
@@ -153,6 +175,14 @@ app.use("/interactions", (req, res, next) => {
       .catch(reject)
     })
   }
+  req.body.closeSupportThread = (channelId:string, userId:string) => {
+    hasActiveTickets[userId] = false;
+    return new Promise((resolve, reject) => {
+      interaction.lockThread(channelId)
+      .then(resolve)
+      .catch(reject)
+    })
+  }
   req.body.joinThread = (channelId:string) => {
     return new Promise((resolve, reject) => {
       fetch(`${discord_api}/channels/${channelId}/thread-members/@me`, {
@@ -160,23 +190,6 @@ app.use("/interactions", (req, res, next) => {
         headers:{
           "authorization":`Bot ${config.bot_token}`
         }
-      })
-      .then(resolve)
-      .catch(reject)
-    })
-  }
-  req.body.lockThread = (channelId:string) => {
-    return new Promise((resolve, reject) => {
-      fetch(`${discord_api}/channels/${channelId}`, {
-        "method":"PATCH",
-        headers:{
-          "authorization":`Bot ${config.bot_token}`,
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          archived:true,
-          locked:true
-        })
       })
       .then(resolve)
       .catch(reject)

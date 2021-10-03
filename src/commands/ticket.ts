@@ -12,8 +12,14 @@ export default new Command({
         interaction.ack({
             "ephemeral":true
         }).then(() => {
-            interaction.createSupportThread(topic.value)
+            interaction.createSupportThread(topic.value, interaction.member.user.id)
             .then(channel => {
+                //   Error
+                if(typeof channel == 'string')
+                    return interaction.reply({
+                        content:channel,
+                        ephemeral:true
+                    }).catch(console.log)
                 interaction.joinThread(channel.id).then(res => {
                     interaction.sendMessage(channel.id, {
                         "content":
@@ -41,6 +47,13 @@ export default new Command({
                         })
                     })
                 })
+            })
+            .catch(err => {
+                if(typeof err == "string")
+                  interaction.reply({
+                      content:err,
+                      ephemeral:true
+                  })
             })
         })
     }

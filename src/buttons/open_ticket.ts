@@ -16,8 +16,14 @@ export default new ButtonCommand({
       interaction.ack({
         "ephemeral":true
       }).then(() => {
-          interaction.createSupportThread(topic.value)
+          interaction.createSupportThread(topic.value, interaction.member.user.id)
           .then(channel => {
+                //   Error
+              if(typeof channel == 'string')
+                return interaction.reply({
+                    content:channel,
+                    ephemeral:true
+                }).catch(console.log)
               interaction.joinThread(channel.id).then(res => {
                   interaction.sendMessage(channel.id, {
                       "content":
@@ -44,8 +50,8 @@ export default new ButtonCommand({
                           ephemeral:true
                       })
                   })
-              })
-          })
+                })
+            })
       })
     }
 })
