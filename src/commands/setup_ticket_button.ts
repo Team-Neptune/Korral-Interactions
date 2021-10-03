@@ -3,7 +3,7 @@ import Command from "../classes/Command";
 export default new Command({
     execute(interaction){
         interaction.reply({
-            "content":`Ready to open tickets from <#${interaction.channel_id}>`,
+            "content":`Ready to open tickets from <#${interaction.internalBot.config.supportChannelId}>`,
             "ephemeral":true
         }).then(() => {
             interaction.sendMessage(interaction.internalBot.config.supportChannelId, {
