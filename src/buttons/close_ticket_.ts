@@ -25,7 +25,7 @@ export default new ButtonCommand({
                 ]
             })
             .then(() => {
-                return interaction.lockThread(threadChannelId)
+                return interaction.closeSupportThread(threadChannelId, currentUserId)
             })
         })
     }
