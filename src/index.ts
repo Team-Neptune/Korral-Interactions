@@ -160,7 +160,7 @@ app.use("/interactions", (req, res, next) => {
     }
     return new Promise((resolve, reject) => {
       if(hasActiveTickets[userId])
-        return resolve(`You already have a ticket opened. Please close the ticket you currently have before opening a new one.`)
+        return resolve(`You already have a ticket opened. Please close your current ticket to open a new one.`)
       hasActiveTickets[userId] = true;
       fetch(`${discord_api}/channels/${config.supportChannelId}/threads`, {
         "method":"POST",
