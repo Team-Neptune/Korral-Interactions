@@ -18,7 +18,7 @@ export default new Command({
                                 "type":2,
                                 "style":2,
                                 "emoji":{
-                                    "name":"🤝"
+                                    "name":"🔓"
                                 }
                             },
                             {
@@ -27,7 +27,7 @@ export default new Command({
                                 "type":2,
                                 "style":2,
                                 "emoji":{
-                                    "name":"🔐"
+                                    "name":"🔒"
                                 }
                             }
                         ]

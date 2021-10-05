@@ -154,7 +154,7 @@ app.use("/interactions", (req, res, next) => {
   }
   req.body.createSupportThread = (shortDesc:string, userId:string, privateTicket:boolean) => {
     let options:ThreadCreateOptions = {
-      name:`${privateTicket?"🎟🔒":"🎟"} - ${shortDesc}`,
+      name:`${privateTicket?"🔒":"🔓"} - ${shortDesc}`,
       auto_archive_duration:1440,
       type:11
     }
