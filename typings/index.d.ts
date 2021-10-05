@@ -86,7 +86,7 @@ export interface Interaction {
     update?(msg:InteractionResponse):Promise<Response>,
     reply(msg:InteractionResponse):Promise<Response>,
     ack(msg:InteractionAckOptions):Promise<Response>,
-    createSupportThread(shortDesc:string, userId:string):Promise<any>,
+    createSupportThread(shortDesc:string, userId:string, privateTicket:boolean):Promise<any>,
     closeSupportThread(channelId:string, userId:string):Promise<any>,
     sendMessage(channelId:string, msg:Message),
     joinThread(channelId:string):Promise<Response>,

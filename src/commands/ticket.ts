@@ -4,7 +4,7 @@ export default new Command({
     execute(interaction){
         // 1-90 char only
         let topic = interaction.data.options.find(o => o.name == "topic");
-        let supportRoleOnly = interaction.data.options.find(o => o.name == "private") || false;
+        let supportRoleOnly = interaction.data.options.find(o => o.name == "private") && interaction.data.options.find(o => o.name == "private").value || false;
         let threadStarter = interaction.member.user.id;
         if(topic.value.length > 90 || topic.value.length < 1)
             return interaction.reply({
@@ -14,7 +14,7 @@ export default new Command({
         interaction.ack({
             "ephemeral":true
         }).then(() => {
-            interaction.createSupportThread(topic.value, threadStarter)
+            interaction.createSupportThread(topic.value, threadStarter, supportRoleOnly)
             .then(channel => {
                 //   Error
                 if(typeof channel == 'string')
