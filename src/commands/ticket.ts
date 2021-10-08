@@ -23,9 +23,16 @@ export default new Command({
                         ephemeral:true
                     }).catch(console.log)
                 interaction.joinThread(channel.id).then(res => {
+                    const questions = [
+                        `- Firmware and CFW / Atmosphere / DeepSea version`,
+                        `- Do you use hekate or fusee-primary?`,
+                        `- If you have an error screen with ID or code, what does it say? A screenshot/picture could be helpful.`,
+                        `- What, if anything, have you tried to fix the issue?`,
+                        `- Are you coming for support with SDSetup or DeepSea?`
+                    ]
                     interaction.sendMessage(channel.id, {
                         "content":
-                        `Hey <@${threadStarter}>,\n<@&${interaction.internalBot.config.supportRoleId}> will be here to support you shortly. In the meantime, to make it easier for us and others help you with your issue, please tell us a few things about your setup, like:\n\n- Firmware and CFW / Atmosphere / DeepSea version\n- Do you use hekate or fusee-primary?\n- If you have an error screen with ID or code, what does it say? A screenshot/picture could be helpful.\n- What, if anything, have you tried to fix the issue?\n\n*(Disclaimer: You may not receive an answer instantly. Many of us have lives outside of Discord and will respond whenever we're able to, whenever that is.)*\n${supportRoleOnly?"\n:lock: *This is a private ticket, so only staff may reply.*":"\n:unlock: *This is a public ticket, everyone may view and reply to it..*"}`,
+                        `Hey <@${threadStarter}>,\n<@&${interaction.internalBot.config.supportRoleId}> will be here to support you shortly. In the meantime, to make it easier for us and others help you with your issue, please tell us a few things about your setup, like:\n\n${questions.join("\n")}\n\n*(Disclaimer: You may not receive an answer instantly. Many of us have lives outside of Discord and will respond whenever we're able to, whenever that is.)*\n${supportRoleOnly?"\n:lock: *This is a private ticket, so only staff may reply.*":"\n:unlock: *This is a public ticket, everyone may view and reply to it..*"}`,
                         "components":[
                             {
                                 "type":1,
