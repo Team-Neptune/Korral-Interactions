@@ -29,6 +29,15 @@ export default new Command({
                                 "emoji":{
                                     "name":"🔒"
                                 }
+                            },
+                            {
+                                "custom_id":`view_open_tickets`,
+                                "label":"View Open Tickets",
+                                "type":2,
+                                "style":1,
+                                "emoji":{
+                                    "name":"🗒️"
+                                }
                             }
                         ]
                     }
