@@ -91,6 +91,7 @@ export interface Interaction {
     sendMessage(channelId:string, msg:Message),
     joinThread(channelId:string):Promise<Response>,
     lockThread(channelId:string):Promise<Response>,
+    fetchActiveThreads(guildId:string):Promise<Response>,
     packageBuilder:{
         builder:Builder,
         store:Builder,

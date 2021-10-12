@@ -195,6 +195,18 @@ app.use("/interactions", (req, res, next) => {
       .catch(reject)
     })
   }
+  req.body.fetchActiveThreads = (guildId:string) => {
+    return new Promise((resolve, reject) => {
+      fetch(`${discord_api}/guilds/${guildId}/threads/active`, {
+        "method":"GET",
+        headers:{
+          "authorization":`Bot ${config.bot_token}`
+        }
+      })
+      .then(resolve)
+      .catch(reject)
+    })
+  }
   if(interaction.type == InteractionType.MESSAGE_COMPONENT){
     req.body.update = (msg:InteractionResponse) => {
       if(msg.ephemeral)
