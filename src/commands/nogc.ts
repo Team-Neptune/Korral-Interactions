@@ -1,5 +1,6 @@
 import Command from "../classes/Command";
 import { config } from "../../config";
+import fetch from "node-fetch";
 
 const discord_api = "https://discord.com/api/v9"
 
