@@ -25,9 +25,9 @@ const message_message_id = "809485735060307990"
 export default new Command({
     execute(interaction){
         interaction.ack({ephemeral:true}).then(() => {
-            getMessage("703302552594284594", "809485735060307990").then((m) => {
+            getMessage(message_channel_id, message_message_id).then((m) => {
                 interaction.reply({
-                    content:`${(m as any).content}\n\n[Jump to Message](https://discord.com/channels/703301751171973190/703302552594284594/809485735060307990)`
+                    content:`${(m as any).content}\n\n[Jump to Message](https://discord.com/channels/703301751171973190/${message_channel_id}/${message_message_id})`
                 })
             })  
         })
