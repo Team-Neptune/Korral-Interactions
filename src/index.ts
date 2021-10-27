@@ -12,6 +12,9 @@ import {
   BuilderApiModule,
   SDLayoutOS,
   InteractionAckOptions,
+  User,
+  ThreadCreateOptions,
+  Message,
 } from "../typings"
 import express from "express"
 import {
@@ -68,6 +71,8 @@ checkForLatestBuildApi()
 
 app.use("/interactions", verifyKeyMiddleware(public_key))
 
+let hasActiveTickets = {}
+
 //Set props/methods
 app.use("/interactions", (req, res, next) => {
   const interaction: Interaction = req.body
@@ -82,6 +87,7 @@ app.use("/interactions", (req, res, next) => {
   }
   req.body.ack = (options?:InteractionAckOptions) => {
     return new Promise((res, rej) => {
+      interaction.acked = true;
       fetch(`${discord_api}/interactions/${interaction.id}/${interaction.token}/callback`, {
         "method":"POST",
         "headers":{
@@ -96,22 +102,109 @@ app.use("/interactions", (req, res, next) => {
       .catch(rej)
     })
   }
+  req.body.sendMessage = (channelId:string, msg:Message) => {
+    return new Promise((res, rej) => {
+      fetch(`${discord_api}/channels/${channelId}/messages`, {
+        "method":"POST",
+        "headers":{
+          "authorization":`Bot ${config.bot_token}`,
+          "Content-Type":"application/json"
+        },
+        "body":JSON.stringify(msg)
+      })
+      .then(res)
+      .catch(rej)
+    })
+  }
   req.body.reply = (options:InteractionResponse) => {
     if(options.ephemeral)
       options.flags = 64
     return new Promise((res, rej) => {
-      fetch(`${discord_api}/interactions/${interaction.id}/${interaction.token}/callback`, {
+      fetch(`${discord_api}${interaction.acked?`/webhooks/${interaction.application_id}/${interaction.token}`:`/interactions/${interaction.id}/${interaction.token}/callback`}`, {
         "method":"POST",
         "headers":{
           "Content-Type":"application/json"
         },
-        "body":JSON.stringify({
+        "body":JSON.stringify(interaction.acked?options:{
           type:4,
           data:options
         })
       })
       .then(res)
       .then(rej)
+      interaction.acked = true;
+    })
+  }
+  req.body.lockThread = (channelId:string) => {
+    return new Promise((resolve, reject) => {
+      fetch(`${discord_api}/channels/${channelId}`, {
+        "method":"PATCH",
+        headers:{
+          "authorization":`Bot ${config.bot_token}`,
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          archived:true,
+          locked:true
+        })
+      })
+      .then(resolve)
+      .catch(reject)
+    })
+  }
+  req.body.createSupportThread = (shortDesc:string, userId:string, privateTicket:boolean) => {
+    let options:ThreadCreateOptions = {
+      name:`${privateTicket?"🔒":"🔓"} - ${shortDesc}`,
+      auto_archive_duration:1440,
+      type:11
+    }
+    return new Promise((resolve, reject) => {
+      if(hasActiveTickets[userId])
+        return resolve(`You already have a ticket opened. Please close your current ticket to open a new one.`)
+      hasActiveTickets[userId] = true;
+      fetch(`${discord_api}/channels/${config.supportChannelId}/threads`, {
+        "method":"POST",
+        headers:{
+          "authorization":`Bot ${config.bot_token}`,
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(options)
+      })
+      .then(r => r.json())
+      .then(resolve)
+      .catch(reject)
+    })
+  }
+  req.body.closeSupportThread = (channelId:string, userId:string) => {
+    hasActiveTickets[userId] = false;
+    return new Promise((resolve, reject) => {
+      interaction.lockThread(channelId)
+      .then(resolve)
+      .catch(reject)
+    })
+  }
+  req.body.joinThread = (channelId:string) => {
+    return new Promise((resolve, reject) => {
+      fetch(`${discord_api}/channels/${channelId}/thread-members/@me`, {
+        "method":"PUT",
+        headers:{
+          "authorization":`Bot ${config.bot_token}`
+        }
+      })
+      .then(resolve)
+      .catch(reject)
+    })
+  }
+  req.body.fetchActiveThreads = (guildId:string) => {
+    return new Promise((resolve, reject) => {
+      fetch(`${discord_api}/guilds/${guildId}/threads/active`, {
+        "method":"GET",
+        headers:{
+          "authorization":`Bot ${config.bot_token}`
+        }
+      })
+      .then(resolve)
+      .catch(reject)
     })
   }
   if(interaction.type == InteractionType.MESSAGE_COMPONENT){

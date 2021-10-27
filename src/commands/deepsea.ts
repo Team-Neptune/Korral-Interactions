@@ -29,6 +29,10 @@ export default new Command({
       releases.forEach((e) => {
         fields.push({name:`${e.name.split(".")[0]}`, value:`[Download](<https://github.com/Team-Neptune/DeepSea/releases/download/${e.latestTag}/${e.name}>)`, inline:false})
       })
+      fields.push({
+        "name":"\u200B",
+        "value":`[What is DeepSea?](https://github.com/Team-Neptune/DeepSea#readme)\n`
+      })
       // Disabled until uptime reliability increases
       // fields.push({
       //   "name":"Custom package",
